@@ -1,3 +1,11 @@
 [{<<"cowboy">>,{pkg,<<"cowboy">>,<<"1.0.4">>},0},
  {<<"cowlib">>,{pkg,<<"cowlib">>,<<"1.0.2">>},1},
- {<<"ranch">>,{pkg,<<"ranch">>,<<"1.2.1">>},1}].
+ {<<"ranch">>,{pkg,<<"ranch">>,<<"1.2.1">>},1},
+ {<<"sync">>,
+  {git,"git://github.com/rustyio/sync.git",
+       {ref,"de3c42df5845719d3a3529b76a01f9729821fe7a"}},
+  0},
+ {<<"uuid">>,
+  {git,"git://github.com/avtobiff/erlang-uuid",
+       {ref,"585c2474afb4a597ae8c8bf6d21e5a9c73f18e0b"}},
+  0}].
