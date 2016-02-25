@@ -18,7 +18,11 @@
 start(_StartType, _StartArgs) ->
     ets:new(observations, [named_table, public, set]),
     Dispatch = cowboy_router:compile([
-        {'_', [{"/sequences/create", create_sequence_handler, []}]}
+      {'_', [
+        {"/sequence/create", create_sequence_handler, []},
+        {"/observation/add", add_observation_handler, []},
+        {"/clear", clear_handler, []}
+      ]}
     ]),
     {ok, _} = cowboy:start_http(mz_listener, 100, [{port, 8080}],
         [{env, [{dispatch, Dispatch}]}]
