@@ -3,7 +3,7 @@
 -export([analyze/2]).
 
 -define(PossibleValues, [119, 18, 93, 91, 58, 107, 111, 82, 127, 123]).
-%%% Mappings
+%%% MAPPINGS
 %% 0 => 1110111 => 01110111 => 119
 %% 1 => 0010010 => 00010010 => 18
 %% 2 => 1011101 => 01011101 => 93
@@ -14,7 +14,7 @@
 %% 7 => 1010010 => 01010010 => 82
 %% 8 => 1111111 => 01111111 => 127
 %% 9 => 1111011 => 01111011 => 123
--define(Mappings, #{
+-define(MAPPINGS, #{
   0 => 2#1110111,
   1 => 2#0010010,
   2 => 2#1011101,
@@ -41,10 +41,10 @@ analyze({L, R}, CurrentState) ->
   end.
 
 is_compatible({Iprev, EprevL, EprevR}, {Icur, EcurL, EcurR}) ->
-  Lprev = maps:get((Iprev div 10), ?Mappings),
-  Rprev = maps:get((Iprev rem 10), ?Mappings),
-  Lcur = maps:get((Icur div 10), ?Mappings),
-  Rcur = maps:get((Icur rem 10), ?Mappings),
+  Lprev = maps:get((Iprev div 10), ?MAPPINGS),
+  Rprev = maps:get((Iprev rem 10), ?MAPPINGS),
+  Lcur = maps:get((Icur div 10), ?MAPPINGS),
+  Rcur = maps:get((Icur rem 10), ?MAPPINGS),
 
   (Icur =:= Iprev - 1) and
     (((Lprev bxor EprevL) band EcurL) =:= 0) and
