@@ -2,7 +2,6 @@
 
 -export([analyze/2]).
 
--define(PossibleValues, [119, 18, 93, 91, 58, 107, 111, 82, 127, 123]).
 %%% MAPPINGS
 %% 0 => 1110111 => 01110111 => 119
 %% 1 => 0010010 => 00010010 => 18
@@ -14,6 +13,8 @@
 %% 7 => 1010010 => 01010010 => 82
 %% 8 => 1111111 => 01111111 => 127
 %% 9 => 1111011 => 01111011 => 123
+%%%
+-define(POSSIBLE_VALUES, [119, 18, 93, 91, 58, 107, 111, 82, 127, 123]).
 -define(MAPPINGS, #{
   0 => 2#1110111,
   1 => 2#0010010,
@@ -40,24 +41,32 @@ analyze({L, R}, CurrentState) ->
     State      -> {not_found, State}
   end.
 
-is_compatible({Iprev, EprevL, EprevR}, {Icur, EcurL, EcurR}) ->
+compatability({Iprev, EprevL, EprevR}, {Icur, EcurL, EcurR}) ->
   Lprev = maps:get((Iprev div 10), ?MAPPINGS),
   Rprev = maps:get((Iprev rem 10), ?MAPPINGS),
   Lcur = maps:get((Icur div 10), ?MAPPINGS),
   Rcur = maps:get((Icur rem 10), ?MAPPINGS),
 
-  (Icur =:= Iprev - 1) and
+  Compatible = (Icur =:= Iprev - 1) and
     (((Lprev bxor EprevL) band EcurL) =:= 0) and
     (((Rprev bxor EprevR) band EcurR) =:= 0) and
     (((Lcur bxor EcurL) band EprevL) =:= 0) and
-    (((Rcur bxor EcurR) band EprevR) =:= 0).
+    (((Rcur bxor EcurR) band EprevR) =:= 0),
+  case Compatible of
+    true -> {true, {Icur, EcurL bor EprevL, EcurR bor EprevR}};
+    _    -> false
+  end.
 
 precise(Previous, Current) ->
-  lists:filter(
-    fun(Cur) ->
-      lists:any(fun(Prev) -> is_compatible(Prev, Cur) end, Previous)
-    end, Current
+  lists:filtermap(
+    fun({Prev, Cur}) -> compatability(Prev, Cur) end,
+    [{X, Y} || X <- Previous, Y <- Current]
   ).
+%  lists:filter(
+%    fun(Cur) ->
+%      lists:any(fun(Prev) -> is_compatible(Prev, Cur) end, Previous)
+%    end, Current
+%  ).
 
 possible_values(Left, Right) ->
   LeftList  = resemblence_list(Left),
@@ -71,7 +80,7 @@ resemblence_list(Value) ->
         false -> {I + 1, Acc};
         true  -> {I + 1, [{I, Value bxor E}|Acc]}
       end
-    end, {0, []}, ?PossibleValues
+    end, {0, []}, ?POSSIBLE_VALUES
   ),
   Res.
 
